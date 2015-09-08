@@ -24,7 +24,7 @@ to greet, something like
     </body>
     </html>
 
-## Adding new names to the list feature
+## Showing list of names: step-1
 
 Let us allow the user to enter new names to be greeted. We will need to add an input text field
 and a button. We can add them to our static markup for now
@@ -73,4 +73,16 @@ the list of names
     </html>
 
 You need `track by $index` if you want to allow duplicate names in the list.
+We can control the list of names to be shown from the outside. From the browser's console type
+
+    angular.element(document.body).scope().names
+    // ["John", "Mary"]
+    angular.element(document.body).scope().names.push('Dave')
+    angular.element(document.body).scope().$apply();
+    // the list is reflected in the DOM
+
+We can access the scope of any DOM element (or surrounding it) via `element.scope()` method.
+Since the `$scope` is simply a plain object, to let Angular know we have modified it and would
+like to see the changes, we need to call `scope.$apply()` method.
+
 
