@@ -4,6 +4,7 @@
 
 * `step-0` - the initial static HTML5 boilerplate with a list of names
 * `step-1` - simple Angular application showing a list of names
+* `step-2` - adding the entered new name
 
 ## Start
 
@@ -84,5 +85,30 @@ We can control the list of names to be shown from the outside. From the browser'
 We can access the scope of any DOM element (or surrounding it) via `element.scope()` method.
 Since the `$scope` is simply a plain object, to let Angular know we have modified it and would
 like to see the changes, we need to call `scope.$apply()` method.
+
+## Add entered name to the list: step-2
+
+Let us connect our static input field and the button to the list of names.
+We can change the HTML markup to bind the input value to the property `newName` on the `$scope`
+
+    Enter a name <input type="text" ng-model="newName" />
+
+And we can call a method on the `$scope` (see the pattern) whenever the user clicks the button
+
+    <button ng-click="addName()">Add</button>
+
+We need to write the `addName()` method, otherwise nothing is happening.
+
+```js
+.controller('HelloController', function ($scope) {
+  $scope.names = ['John', 'Mary'];
+  $scope.addName = function () {
+    $scope.names.push($scope.newName);
+  };
+});
+```
+
+Nice! The `newName` property was created implicitly by the input field bound to the model property `newName`.
+
 
 
