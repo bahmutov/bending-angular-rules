@@ -150,3 +150,8 @@ button is clicked and we get into the `addName` method
     // Click "Add" button
     // Debugger pauses at the first line in `addName`
 
+We can even profile long-running methods using Chrome's DevTools by "wrapping" the method
+in `console.profile()` and `console.profileEnd()` commands. 
+See [Improving Angular web app performance example][code-snippets-post] for details.
+
+[code-snippets-post]: http://glebbahmutov.com/blog/improving-angular-web-app-performance-example/
