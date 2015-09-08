@@ -7,6 +7,7 @@
 * `step-2` - adding the entered new name
 * `step-3` - dynamically extend a method on the scope
 * `step-4` - calling the server to get the new name
+* `step-5` - mocking server responses using closure loophole
 
 ## Start
 
@@ -192,3 +193,36 @@ button we get an Ajax error
     Error: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'file:///new/name'
 
 Duh!
+
+## Bending the rules to mock the server response: step-5
+
+Let us bend the JavaScript closure rules to mock the server. Here is how we are going to 
+overwrite the `addName` method at runtime from the browser's console *to fake* the `$http` service.
+
+```js
+var $http = { 
+    get: function (url) { 
+        return new Promise(function (resolve) { 
+            return resolve('Mock name'); 
+        });
+    } 
+};
+var $scope = angular.element(document.body).scope();
+var _addName = $scope.addName;
+$scope.addName = eval('(' + _addName.toString() + ')');
+```
+
+Click the "Add" button.
+
+BOOM! The mock promise-returning function from the browser's console 
+*overwrote a variable inside the parent's closure of a $scope method*. 
+We knew that `addName` is using `$http` and `$scope` variables. Thus we replaced
+the function by evaluating the `$scope.addName` method *as is*, but with *our defined*
+variables; `$scope` was the same, but `$http` was a fake one. The JavaScript `eval`
+takes the *current* scope as the parent scope, thus we can substitute new functionality
+into the existing application dynamically.
+
+Really useful library based on this principle is [ng-wedge][ng-wedge]:
+real time mock responses for a live application.
+
+[ng-wedge]: https://github.com/bahmutov/ng-wedge
