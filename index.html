@@ -2,12 +2,19 @@
 <html>
 <head>
   <title>hello world</title>
+  <script src="node_modules/angular/angular.js"></script>
+  <script>
+  angular.module('HelloApp', [])
+    .controller('HelloController', function ($scope) {
+      $scope.names = ['John', 'Mary'];
+    });
+  </script>
 </head>
-<body>
+<body ng-app="HelloApp" ng-controller="HelloController">
   <h2>Hello</h2>
   <ul>
-    <li>John</li>
-    <li>Mary</li>
+    <li ng-repeat="name in names track by $index">{{ name }}</li>
   </ul>
+  Enter a name <input type="text" /><button>Add</button>
 </body>
 </html>
