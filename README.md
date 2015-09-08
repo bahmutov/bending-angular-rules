@@ -5,6 +5,7 @@
 * `step-0` - the initial static HTML5 boilerplate with a list of names
 * `step-1` - simple Angular application showing a list of names
 * `step-2` - adding the entered new name
+* `step-3` - dynamically extend a method on the scope
 
 ## Start
 
@@ -109,6 +110,43 @@ We need to write the `addName()` method, otherwise nothing is happening.
 ```
 
 Nice! The `newName` property was created implicitly by the input field bound to the model property `newName`.
+Since we are using built-in click handler `ng-click`, we did not have to call `$scope.$apply()` - it is done
+automatically for us.
 
+## Clear the entered value: step-3
 
+We notice that the added name is NOT cleared from the input field. We never set the scope
+property to the `undefined` or an empty string, thus it just stayed in the DOM. While it would be simple
+to write the following code, we want to experiment first
+
+```js
+$scope.addName = function () {
+  $scope.names.push($scope.newName);
+  delete $scope.newName;
+};
+```
+
+Can we *add* the missing delete line to the scope method dynamically?
+Yes we can, right from the browser's console
+
+```js
+var scope = angular.element(document.body).scope();
+var _addName = scope.addName; // save reference to the true method
+scope.addName = function () { _addName(); delete scope.newName; };
+```
+
+BOOM! We dynamically extended an Angular application! This is a very useful approach:
+accessing methods from the `$scope` to wrap them on the fly. For example, we can monitor
+the method's execution. From the Chrome console:
+
+    monitor(scope.addName);
+    // Click "Add" button
+    // VM946:1 function scope.addName called
+
+We can even find where the code is without knowing it. Let us say, we want to stop when the 
+button is clicked and we get into the `addName` method
+
+    debug(angular.element(document.body).scope().addName)
+    // Click "Add" button
+    // Debugger pauses at the first line in `addName`
 
