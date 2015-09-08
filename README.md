@@ -6,6 +6,7 @@
 * `step-1` - simple Angular application showing a list of names
 * `step-2` - adding the entered new name
 * `step-3` - dynamically extend a method on the scope
+* `step-4` - calling the server to get the new name
 
 ## Start
 
@@ -155,3 +156,39 @@ in `console.profile()` and `console.profileEnd()` commands.
 See [Improving Angular web app performance example][code-snippets-post] for details.
 
 [code-snippets-post]: http://glebbahmutov.com/blog/improving-angular-web-app-performance-example/
+
+## Calling the server to get the new name: step-4
+
+Let us show how we can bend JavaScript closure rules a little. We can get a reference to the 
+`$scope` object and the $scope.addName`, thus we can override the method completely at run-time
+
+```js
+var scope = angular.element(document.body).scope();
+scope.addName = function () { alert('Not adding ' + scope.newName); };
+```
+
+This is a complete replacement. What if we wanted to do something else - like partial replacement?
+Here is a good example. Let us say, `$scope.addName` grabbed the name not from the input field, but
+from a server.
+
+```html
+<button ng-click="addName()">Add</button> from the server
+```
+
+```js
+.controller('HelloController', function ($scope, $http) {
+  $scope.names = ['John', 'Mary'];
+  $scope.addName = function () {
+    $http.get('/new/name').then(function (newName) {
+      $scope.names.push(newName);
+    });
+  };
+});
+```
+
+Well, we are running straight from the file system using `open index.html`. When we click "Add"
+button we get an Ajax error
+
+    Error: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'file:///new/name'
+
+Duh!
