@@ -343,6 +343,8 @@ benv.setup(function () {
 });
 ```
 
+![loading app from Node](images/load-app-from-node.png)
+
 Nice, we are instantiating parts of Angular app directly from the command line using Node without
 using any browsers. 
 
