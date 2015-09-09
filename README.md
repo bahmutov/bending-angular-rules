@@ -466,11 +466,7 @@ ngDice({
 
 We can confirm that the unit test passes
 
-    $ mocha next-name-spec.js 
-      app
-        nextName()
-          ✓ returns next name 
-      1 passing (87ms)
+![unit test](images/mocha-run.png)
 
 Here is what the unit test has accomplished
 
