@@ -128,7 +128,11 @@ automatically for us.
 
 ## Clear the entered value: step-3
 
-We notice that the added name is NOT cleared from the input field. We never set the scope
+We notice that the added name is NOT cleared from the input field. 
+
+![input value stays](images/name-stays.png)
+
+We never set the scope
 property to the `undefined` or an empty string, thus it just stayed in the DOM. While it would be simple
 to write the following code, we want to experiment first
 
@@ -147,6 +151,8 @@ var scope = angular.element(document.body).scope();
 var _addName = scope.addName; // save reference to the true method
 scope.addName = function () { _addName(); delete scope.newName; };
 ```
+
+![extending scope method](images/extend-scope-method.png)
 
 BOOM! We dynamically extended an Angular application! This is a very useful approach:
 accessing methods from the `$scope` to wrap them on the fly. For example, we can monitor
