@@ -8,6 +8,7 @@ benv.setup(function () {
   var $controller = angular.injector(['ng', 'HelloApp']).get('$controller');
   var scope = {};
   $controller('HelloController', { $scope: scope });
+  scope.addName();
   console.log(scope.names);
-  // prints [ 'John', 'Mary' ]
+  // prints [ 'John', 'Mary', 'World' ]
 });

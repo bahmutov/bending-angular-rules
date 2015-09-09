@@ -432,6 +432,10 @@ Imagine the new name to be added to the list comes from a private function insid
 }());
 ```
 
+It certainly works - we can see the effect even from the command line
+
+![private function works](images/use-private-function.png)
+
 Can we unit test the function `nextName` to see how it behaves? Only indirectly by constructing a controller,
 adding a mock scope object, calling `addName`, etc. Such a long process. Or we could use a hook into NodeJS
 loader using `really-need` that can grab a reference to any function for us. All we need to tell the loader
