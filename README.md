@@ -363,10 +363,51 @@ seen before.
 
 Both of these features were used to implement [really-need][really-need] - a replacement for NodeJS `require`
 method. Some of the cool features it can do: rewrite the loaded source, bust module cache, rebuild the compiled
-exported values, pass arguments to the module and mock `__dirname` and `__filename`. In particular the
-source rewriting is useful. We could use it to instrument the source code with code coverage statements.
+exported values, pass arguments to the module and mock `__dirname` and `__filename`. 
+
+```js
+require = require('really-need');
+var foo = require('./foo', {
+    // remove previously loaded foo module
+    bustCache: true,
+    // remove from cache AFTER loading
+    keep: false,
+    pre: function (source, filename) {
+        // transform the source before compiling it
+        return source;
+    },
+    post: function (exported, filename) {
+        // transform the exported object / value from the file
+        return exported;
+    },
+    // inject additional values into foo.js
+    args: {
+        a: 10,
+        b: 5,
+        __dirname: '/some/path'
+    }
+});
+```
+
+The `pre` hook is especially useful for source rewriting. 
+We could use it to instrument the source code with code coverage statements.
 Or we could use it to "grab" references to private functions. Why would one need to do this?
-To enable quick unit testing of *private functions, expressions and variables*.
+To enable quick unit testing of *private functions, expressions and variables*. For example
+if we had file `foo.js` that exports nothing, we could run the source through a preprocessor
+whenever someone required it.
+
+```js
+// foo.js
+var foo = 'foo';
+```
+
+and the evaluated source code would be something like
+
+```js
+// transformed code from foo.js
+var foo = 'foo';
+global.__references['foo'] = foo;
+```
 
 Imagine the new name to be added to the list comes from a private function inside the file `app.js`.
 
