@@ -9,6 +9,7 @@
 * `step-4` - calling the server to get the new name
 * `step-5` - mocking server responses using closure loophole
 * `step-6` - loading Angular app from Node
+* `step-7` - unit testing private function using code extraction
 
 ## Start
 
@@ -327,3 +328,91 @@ using any browsers.
 [Run Angular in Web Worker]: http://glebbahmutov.com/blog/run-angular-in-web-worker/
 [benv]: https://npmjs.org/package/benv
 [jsdom]: https://npmjs.org/package/jsdom
+
+## Why NodeJS require matters: step-7
+
+Why did we spend time loading the Angular code under Node? Why is Node's built-in `require` 
+anything but the ordinary implementation of the CommonJS standard? Turns out it has nifty features
+we can exploit.
+
+* It has a *preprocessor hook* that can run the loaded source through user-supplied callback function
+before evaluating it.
+* The built-in `require` method can be *overwritten completely* using the same closure trick we have
+seen before.
+
+Both of these features were used to implement [really-need][really-need] - a replacement for NodeJS `require`
+method. Some of the cool features it can do: rewrite the loaded source, bust module cache, rebuild the compiled
+exported values, pass arguments to the module and mock `__dirname` and `__filename`. In particular the
+source rewriting is useful. We could use it to instrument the source code with code coverage statements.
+Or we could use it to "grab" references to private functions. Why would one need to do this?
+To enable quick unit testing of *private functions, expressions and variables*.
+
+Imagine the new name to be added to the list comes from a private function inside the file `app.js`.
+
+```js
+// app.js
+(function () {
+  function nextName() {
+    return 'World';
+  }
+  angular.module('HelloApp', [])
+    .controller('HelloController', function ($scope) {
+      $scope.names = ['John', 'Mary'];
+      $scope.addName = function () {
+        $scope.names.push(nextName());
+      };
+    });
+}());
+```
+
+Can we unit test the function `nextName` to see how it behaves? Only indirectly by constructing a controller,
+adding a mock scope object, calling `addName`, etc. Such a long process. Or we could use a hook into NodeJS
+loader using `really-need` that can grab a reference to any function for us. All we need to tell the loader
+is the signature of the function we need. We have implemented the Angular initialization (using `benv`
+and NodeJS hook) in a single helper module [ng-dice][ng-dice]
+
+    npm install ng-dice
+
+`ng-dice` stands for A**ng**ular **D**ependency **I**njection and **C**ode **E**xtraction library.
+
+Create a simple BDD unit test for Mocha or Jasmine test framework
+
+```js
+// next-name-spec.js
+var ngDice = require('ng-dice');
+ngDice({
+  file: __dirname + '/app.js',
+  extract: 'nextName()',
+  tests: function (codeExtract) {
+    it('returns next name', function () {
+      var nextName = codeExtract();
+      console.assert(nextName() === 'World');
+    });
+  }
+});
+```
+
+We can confirm that the unit test passes
+
+    $ mocha next-name-spec.js 
+      undefined
+        nextName()
+          ✓ returns next name 
+      1 passing (87ms)
+
+Here is what the unit test has accomplished
+
+* Loaded the CommonJS module `next-name-spec.js`
+* The `ngDice` function has loaded the AngularJS library from `node_modules` path
+* It then loaded using a patched NodeJS `require` method file `app.js`, rewriting the source
+to insert code to grab the reference to a function with the signature `nextName()`
+* The Angular application code loaded fine using the synthetic browser environment
+* When we called the `codeExtract()` function passed back to our user code, we got the
+reference to the actual `function nextName()` from `app.js`
+* We called `nextName()` directly and confirmed its output.
+
+One can argue that unit testing private functions and variables goes against the principles
+of black box testing. Yes, but it pays to bend the rules a little.
+
+[really-need]:  https://npmjs.org/package/really-need
+[ng-dice]:  https://npmjs.org/package/ng-dice
