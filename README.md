@@ -226,3 +226,82 @@ Really useful library based on this principle is [ng-wedge][ng-wedge]:
 real time mock responses for a live application.
 
 [ng-wedge]: https://github.com/bahmutov/ng-wedge
+
+## Why can't we load Angular app directly from NodeJS? step-6
+
+We have installed the AngularJS library using *Node Package Manager*
+
+    npm install angular
+
+Yet, if we move the application's code into a separate javascript file, we
+cannot load it directly. Try moving the JavaScript into a separate file
+
+```js
+// app.js
+angular.module('HelloApp', [])
+  .controller('HelloController', function ($scope, $http) {
+    $scope.names = ['John', 'Mary'];
+    $scope.addName = function () {
+      $http.get('/new/name').then(function (newName) {
+        $scope.names.push(newName);
+      });
+    };
+  });
+```
+    $ node app.js 
+    /git/bending-angular-rules/app.js:1
+    (function (exports, require, module, __filename, __dirname) { angular.module('
+                                                                  ^
+    ReferenceError: angular is not defined
+
+Of course, we loaded Angular framework first in our HTML page, before loading the `app.js` file.
+
+    // index.html
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="app.js"></script>
+
+Can we load AngularJS framework itself directly from Node? Not directly
+
+    $ node node_modules/angular/angular.js
+    /git/bending-angular-rules/node_modules/angular/angular.js:28686
+    })(window, document);
+       ^
+    ReferenceError: window is not defined
+
+It would be very cool if we could load Angular. While this is [possible][Run Angular in Web Worker],
+I prefer a different approach to this problem. We will *simulate the full browser environment (window, document)*
+under NodeJS. We can do this using [benv][benv] module that puts a very simple API on top of
+[jsdom][jsdom].
+
+    npm install benv
+
+Let us create a file that shows loading AngularJS framework and `app.js` from Node
+
+```js
+// load.js
+var benv = require('benv');
+benv.setup(function () {
+  benv.expose({
+    angular: benv.require('node_modules/angular/angular.js', 'angular')
+  });
+  console.log('window is', typeof window);
+  console.log('document is', typeof document);
+  console.log('angular is', typeof angular);
+  console.log('window.angular === angular', window.angular === angular);
+});
+```
+
+You can now execute this file `load.js` from Node to verify that the synthetic environment has been
+setup and the Angular framework has been loaded.
+
+    $ node load.js 
+    window is object
+    document is object
+    angular is object
+    window.angular === angular true
+
+[Run Angular in Web Worker]: http://glebbahmutov.com/blog/run-angular-in-web-worker/
+[benv]: 
+[jsdom]: 
+
+
