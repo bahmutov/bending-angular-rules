@@ -211,7 +211,9 @@ button we get an Ajax error
 
     Error: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'file:///new/name'
 
-Duh!
+![Ajax error](images/ajax-error.png)
+
+Duh! We don't have a server to respond.
 
 ## Bending the rules to mock the server response: step-5
 
@@ -233,6 +235,8 @@ $scope.addName = eval('(' + _addName.toString() + ')');
 
 Click the "Add" button.
 
+![mock http](images/mock-http.png)
+
 BOOM! The mock promise-returning function from the browser's console 
 *overwrote a variable inside the parent's closure of a $scope method*. 
 We knew that `addName` is using `$http` and `$scope` variables. Thus we replaced
@@ -241,8 +245,8 @@ variables; `$scope` was the same, but `$http` was a fake one. The JavaScript `ev
 takes the *current* scope as the parent scope, thus we can substitute new functionality
 into the existing application dynamically.
 
-Really useful library based on this principle is [ng-wedge][ng-wedge]:
-real time mock responses for a live application.
+Really useful library based on this principle is [ng-wedge][ng-wedge], it is a
+mock response utility for a live application.
 
 [ng-wedge]: https://github.com/bahmutov/ng-wedge
 
