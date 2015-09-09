@@ -452,6 +452,7 @@ Create a simple BDD unit test for Mocha or Jasmine test framework
 // next-name-spec.js
 var ngDice = require('ng-dice');
 ngDice({
+  name: 'app',
   file: __dirname + '/app.js',
   extract: 'nextName()',
   tests: function (codeExtract) {
@@ -466,7 +467,7 @@ ngDice({
 We can confirm that the unit test passes
 
     $ mocha next-name-spec.js 
-      undefined
+      app
         nextName()
           ✓ returns next name 
       1 passing (87ms)

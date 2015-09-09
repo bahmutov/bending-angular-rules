@@ -1,5 +1,6 @@
 var ngDice = require('ng-dice');
 ngDice({
+  name: 'app',
   file: __dirname + '/app.js',
   extract: 'nextName()',
   tests: function (codeExtract) {
