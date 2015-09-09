@@ -14,7 +14,7 @@
 ## Start
 
 Create a static page with HTML5 boilerplate code that shows a list of names
-to greet, something like
+to greet, something like this (saved as `index.html`)
 
     <!DOCTYPE html>
     <html>
@@ -29,6 +29,11 @@ to greet, something like
       </ul>
     </body>
     </html>
+
+You can view this page by opening the file in any browser (I used Chrome in this demo) 
+directly from the command line
+
+    open index.html
 
 ## Showing list of names: step-1
 
