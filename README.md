@@ -291,8 +291,9 @@ Can we load AngularJS framework itself directly from Node? Not directly
        ^
     ReferenceError: window is not defined
 
-It would be very cool if we could load Angular. While this is [possible][Run Angular in Web Worker],
-I prefer a different approach to this problem. We will *simulate the full browser environment (window, document)*
+It would be very cool if we could load Angular without `window`. 
+While this is [possible][Run Angular in Web Worker], I prefer a different approach to this problem. 
+We will *simulate the full browser environment (window, document)*
 under NodeJS. We can do this using [benv][benv] module that puts a very simple API on top of
 [jsdom][jsdom].
 
@@ -361,7 +362,9 @@ we can exploit.
 * It has a *preprocessor hook* that can run the loaded source through user-supplied callback function
 before evaluating it.
 * The built-in `require` method can be *overwritten completely* using the same closure trick we have
-seen before.
+seen before, see [Hacking Node require][hacking require]
+
+[hacking require]: http://glebbahmutov.com/blog/hacking-node-require/
 
 Both of these features were used to implement [really-need][really-need] - a replacement for NodeJS `require`
 method. Some of the cool features it can do: rewrite the loaded source, bust module cache, rebuild the compiled
