@@ -1,0 +1,31 @@
+{
+  "name": "bending-angular-rules",
+  "version": "1.0.0",
+  "description": "Bending JavaScript rules in an Angular application",
+  "main": "app.js",
+  "dependencies": {
+    "angular": "1.4.5",
+    "benv": "1.1.0",
+    "mocha": "2.3.2",
+    "ng-dice": "0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha *-spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bahmutov/bending-angular-rules.git"
+  },
+  "keywords": [
+    "angular",
+    "demo",
+    "tutorial"
+  ],
+  "author": "Gleb Bahmutov <gleb.bahmutov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bahmutov/bending-angular-rules/issues"
+  },
+  "homepage": "https://github.com/bahmutov/bending-angular-rules#readme"
+}
