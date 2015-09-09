@@ -3,8 +3,11 @@ benv.setup(function () {
   benv.expose({
     angular: benv.require('node_modules/angular/angular.js', 'angular')
   });
-  console.log('window is', typeof window);
-  console.log('document is', typeof document);
-  console.log('angular is', typeof angular);
-  console.log('window.angular === angular', window.angular === angular);
+  require('./app');
+  // confirm that module HelloApp has controller HelloController
+  var $controller = angular.injector(['ng', 'HelloApp']).get('$controller');
+  var scope = {};
+  $controller('HelloController', { $scope: scope });
+  console.log(scope.names);
+  // prints [ 'John', 'Mary' ]
 });

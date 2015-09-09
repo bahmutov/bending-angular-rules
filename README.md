@@ -8,6 +8,7 @@
 * `step-3` - dynamically extend a method on the scope
 * `step-4` - calling the server to get the new name
 * `step-5` - mocking server responses using closure loophole
+* `step-6` - loading Angular app from Node
 
 ## Start
 
@@ -300,8 +301,29 @@ setup and the Angular framework has been loaded.
     angular is object
     window.angular === angular true
 
+Instead of printing diagnostic messages, let us load our Angular application. We can now use
+simple CommonJS require included with Node for this
+
+```js
+// load.js
+var benv = require('benv');
+benv.setup(function () {
+  benv.expose({
+    angular: benv.require('node_modules/angular/angular.js', 'angular')
+  });
+  require('./app');
+  // confirm that module HelloApp has controller HelloController
+  var $controller = angular.injector(['ng', 'HelloApp']).get('$controller');
+  var scope = {};
+  $controller('HelloController', { $scope: scope });
+  console.log(scope.names);
+  // prints [ 'John', 'Mary' ]
+});
+```
+
+Nice, we are instantiating parts of Angular app directly from the command line using Node without
+using any browsers. 
+
 [Run Angular in Web Worker]: http://glebbahmutov.com/blog/run-angular-in-web-worker/
-[benv]: 
-[jsdom]: 
-
-
+[benv]: https://npmjs.org/package/benv
+[jsdom]: https://npmjs.org/package/jsdom
